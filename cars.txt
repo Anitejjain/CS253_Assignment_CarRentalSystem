@@ -1,0 +1,20 @@
+Rolls-Royce
+RJ01abcd
+10
+Efficiency 90%
+Honda
+RJ02abcd
+8
+Efficiency 70%
+Ferrari
+RJ03abcd
+9
+Efficiency 85%
+Hyundai
+RJ04abcd
+5
+Efficiency 80%
+Safari
+RJ05abcd
+8
+Efficiency 95%
