@@ -5,6 +5,7 @@
 #include <chrono>
 #include <sstream>
 #include<unordered_set>
+#include<unordered_map>
 
 using namespace std;
 using namespace std::chrono;
@@ -60,15 +61,16 @@ class User {
 };
 
 class Customer : public User {
-    public:
-        string customerRecord;
+    private:
+        double customerRecord;
         string otherDetails;
+        double fineDue;
+
     public:
         unordered_set<string> rentedCars;
-        double fineDue;
         unordered_map<string,string> car_duedates;
 
-        static Customer* addCustomer(string n, string id, string pass, unordered_set<string> cars, double fine, string record, unordered_map<string,string> car_duedates){
+        static Customer* addCustomer(string n, string id, string pass, unordered_set<string> cars, double fine, double record, unordered_map<string,string> car_duedates){
             Customer* newcustomer = new Customer;
             newcustomer->name = n;
             newcustomer->ID = id;
@@ -78,6 +80,21 @@ class Customer : public User {
             newcustomer->customerRecord=record;
             newcustomer->car_duedates=car_duedates;
             return newcustomer;           
+        }
+
+        static int checkFine(Customer* customer){
+            return customer->fineDue;
+        }
+
+        static void updateFine(Customer* customer, double fineDue){
+            customer->fineDue = fineDue;
+        }
+        static double getCustomerRecord(Customer* customer){
+            return customer->customerRecord;
+        }
+
+        static void updateCustomerRecord(Customer* customer,double customerRecord){
+            customer->customerRecord=customerRecord;
         }
 
         static void deleteCustomer(vector<Customer*>& customers, string customerName, string customerId){
@@ -101,7 +118,7 @@ class Customer : public User {
             return nullptr; 
         }
 
-        static void updateCustomer(vector<Customer*> customers,string customerName,string customerId,int fine,string record){
+        static void updateCustomer(vector<Customer*> customers,string customerName,string customerId,int fine,double record){
             for (auto it = customers.begin(); it != customers.end(); ++it) {
                 if((*it)->name == customerName && (*it)->ID == customerId){
                 (*it)->fineDue=fine;
@@ -125,7 +142,7 @@ class Customer : public User {
                     }
                     cout << "Rented Cars: ";
                     for (unordered_set<string>::iterator carIt = (*it)->rentedCars.begin(); carIt != (*it)->rentedCars.end(); ++carIt) {
-                        cout << *carIt << ", ";
+                        cout << *carIt << " Due-Date: "<< (*it)->car_duedates[*carIt]<<", ";
                     }
                     cout << endl;
                 }
@@ -142,7 +159,7 @@ class Customer : public User {
                 else{
                     cout << "Rented Cars: ";
                     for (unordered_set<string>::iterator carIt = (*it)->rentedCars.begin(); carIt != (*it)->rentedCars.end(); ++carIt) {
-                        cout << *carIt << ", ";
+                        cout << *carIt << " Due Date: "<< (*it)->car_duedates[*carIt]<<", ";
                     }
                     cout << endl;
                 }
@@ -152,16 +169,15 @@ class Customer : public User {
 
 class Employee : public User {
 
-    public:
-
-        unordered_set<string> rentedCars;
-        int fineDue;
-        string employeeRecord;
+    private:
+        double employeeRecord;
         string otherDetails;
+        int fineDue;
 
     public:
+        unordered_set<string> rentedCars;
 
-        static Employee* addEmployee(string n, string id, string pass, unordered_set<string> cars, double fine, string record){
+        static Employee* addEmployee(string n, string id, string pass, unordered_set<string> cars, double fine, double record){
             Employee* newemployee = new Employee;
             newemployee->name = n;
             newemployee->ID = id;
@@ -176,7 +192,28 @@ class Employee : public User {
             return employee->fineDue;
         }
 
-        static int updateEmployee(vector<Employee*> employees,string employeeName,string employeeId,int fine,string record){
+        static void updateFine(Employee* employee,double fineDue){
+            employee->fineDue=fineDue;
+        }
+
+        static double getEmployeeRecord(Employee* employee){
+            return employee->employeeRecord;
+        }
+
+        static void updateEmployeeRecord(Employee* employee,double employeeRecord){
+            employee->employeeRecord=employeeRecord;
+        }
+
+        static Employee* searchEmployee(vector<Employee*>& employees, string employeeName, string employeeId) {
+            for (vector<Employee*>::iterator it = employees.begin(); it != employees.end(); ++it) {
+                if ((*it)->name == employeeName && (*it)->ID == employeeId) {
+                    return *it;
+                }
+            }
+            return nullptr;
+        }
+
+        static int updateEmployee(vector<Employee*> employees,string employeeName,string employeeId,int fine,double record){
             for (auto it = employees.begin(); it != employees.end(); ++it) {
                 if((*it)->name == employeeName && (*it)->ID == employeeId){
                    (*it)->fineDue=fine;
@@ -230,20 +267,49 @@ class Manager : public User {
 };
 
 class Car{
-    public:
+    private:
+        double Conditions;
+        double price;
+        string otherDetails;   
         string carName;
         string carModel;
-        string Conditions;
-        string otherDetails;     
+  
     public:
 
-        static Car* addcar(string n, string model, string condition, string details){
+        static Car* addcar(string n, string model, double condition,double renting_price, string details){
             Car* newcar = new Car;
             newcar->carName = n;
             newcar->carModel = model;
             newcar->Conditions = condition;
+            newcar->price = renting_price;
             newcar->otherDetails = details;  
             return newcar;           
+        }
+
+        static string getName(Car* car){
+            return car->carName;
+        }
+        static string getModel(Car* car){
+            return car->carModel;
+        }
+
+        static double getCondition(Car* car){
+            return car->Conditions;
+        }
+        static double getPrice(Car* car){
+            return car->price;
+        }
+        static string getDetails(Car* car){
+            return car->otherDetails;
+        }
+
+        static Car* searchCar(vector<Car*>& cars, string carName, string carModel) {
+            for (vector<Car*>::iterator it = cars.begin(); it != cars.end(); ++it) {
+                if ((*it)->carName == carName && (*it)->carModel == carModel) {
+                    return *it;
+                }
+            }
+            return nullptr;
         }
 
         static int rentCar(vector<Car*>& cars, const string& carName, const string& carModel) {
@@ -263,15 +329,16 @@ class Car{
         static void showAvailableCars(const vector<Car*>& cars){
             cout<<"Car Availble for Rent Details: "<<endl;
             for (auto it = cars.begin(); it != cars.end(); ++it) {
-                cout<<"Car Name: "<<(*it)->carName<<" Car Model: "<<(*it)->carModel<<endl;
+                cout<<"Car Name: "<<(*it)->carName<<" Car Model: "<<(*it)->carModel<<" Price: "<< (*it)->price<<endl;
             }
             cout << endl; 
         }
 
-        static void updateCar(vector<Car*> cars,string carName,string carModel,string carCondition,string details){
+        static void updateCar(vector<Car*> cars,string carName,string carModel,double carCondition,double renting_price,string details){
             for (auto it = cars.begin(); it != cars.end(); ++it) {
                 if((*it)->carName == carName && (*it)->carModel == carModel){
                    (*it)->Conditions=carCondition;
+                   (*it)->price=renting_price;
                    (*it)->otherDetails=details;
                     cout << "Car \"" << carName << " " << carModel << "\" details has been updated." << endl;
                     return ;
@@ -294,9 +361,6 @@ class Car{
             return ;            
         }
 
-        static void allCarDetails(vector<Car*> cars, vector<Customer*> customers){
-            
-        }
 };
 
 void updateFines(vector<Customer*> customers,vector<Employee*> employees,unordered_map<string,string> car_duedates){
@@ -308,7 +372,7 @@ void updateFines(vector<Customer*> customers,vector<Employee*> employees,unorder
                 int daysPassed = daysPassedSinceDueDate(dueDate);
                 if (daysPassed > 0) {
                     double fine = 200 * daysPassed;
-                    customer->fineDue += fine;
+                    Customer::updateFine(customer,fine);
                 }
             }
         }
@@ -320,7 +384,7 @@ void updateFines(vector<Customer*> customers,vector<Employee*> employees,unorder
                 int daysPassed = daysPassedSinceDueDate(dueDate);
                 if (daysPassed > 0) {
                     double fine = 200 * daysPassed;
-                    employee->fineDue += fine;
+                    Employee::updateFine(employee,fine);
                 }
             }
         }
@@ -349,8 +413,8 @@ int main(){
         string name = line;
         string id;
         string password;
-        double fine_due;
-        string record;
+        double fine_due, record;
+
         unordered_set<string> rented_cars;
         vector<string> carDue;
         vector<string> due_dates;
@@ -397,7 +461,7 @@ int main(){
             fine_due=0;
         }
         getline(fcustomers, line);
-        record = line;
+        record = stoi(line);
 
         Customer* new_customer = Customer::addCustomer(name, id, password, rented_cars, fine_due, record, car_duedates);
         customers.push_back(new_customer);
@@ -407,8 +471,7 @@ int main(){
         string name = line;
         string id;
         string password;
-        double fine_due;
-        string record;
+        double fine_due, record;
         unordered_set<string> rented_cars;
 
         getline(femployees, line);
@@ -428,7 +491,7 @@ int main(){
         getline(femployees, line);
         fine_due = stoi(line);
         getline(femployees, line);
-        record = line;
+        record = stoi(line);
 
         Employee* new_employee = Employee::addEmployee(name, id, password, rented_cars, fine_due, record);
         employees.push_back(new_employee);
@@ -452,17 +515,19 @@ int main(){
 
         string name = line;
         string model;
-        string condition;
         string details;
+        double renting_price,condition;
 
         getline(fcars, line);
         model = line;
         getline(fcars, line);
-        condition = line;
+        condition = stoi(line);
+        getline(fcars, line);
+        renting_price = stoi(line); 
         getline(fcars, line);
         details = line;        
 
-        Car* new_car = Car::addcar(name, model, condition, details);
+        Car* new_car = Car::addcar(name, model, condition,renting_price, details);
         cars.push_back(new_car);
     }
 
@@ -489,7 +554,7 @@ int main(){
         if(post == "Customer"){
             for(Customer* it_customer : customers) {
                 if(it_customer->name == name && it_customer->ID == id && it_customer->password == password) {
-                    cout << "Customer logged in successfully!" << endl;
+                    cout << "\nCustomer logged in successfully!\n" << endl;
                     temp = 0;
                     customer=it_customer;
                     break;
@@ -500,7 +565,7 @@ int main(){
         }else if(post == "Employee"){
             for(Employee* it_employee : employees) {
                 if(it_employee->name == name && it_employee ->ID == id && it_employee->password == password) {
-                    cout << "Employee logged in successfully!" << endl;
+                    cout << "\nEmployee logged in successfully!\n" << endl;
                     temp = 0;
                     employee=it_employee;
                     break;
@@ -511,7 +576,7 @@ int main(){
         }else if(post == "Manager"){
             for(Manager* it_manager : managers) {
                 if(it_manager->name == name && it_manager ->ID == id && it_manager->password == password) {
-                    cout << "Manager logged in successfully!" << endl;
+                    cout << "\nManager logged in successfully!\n" << endl;
                     temp = 0;
                     manager=it_manager;
                     break;
@@ -565,7 +630,7 @@ int main(){
                 }
 
             }else if(inp==3){
-                cout<< customer->fineDue <<endl;
+                cout<< Customer::checkFine(customer) <<endl;
                 cout<<"Want to Perform Next Task Enter 1 else 0: ";
                 cin>>inp;
                 if(inp!=1){
@@ -582,13 +647,14 @@ int main(){
             cout << "2. View Rented Cars"<<endl;
             cout << "3. Check Fine Due"<< endl;
             cout << "4. Rent Car"<< endl;
-            cout << "5. Logout"<< endl;
+            cout << "5. Return Car"<< endl;
+            cout << "6. Logout"<< endl;
             
             temp=1;
             while(temp){
-                cout << "Enter input integer in the range [1,5]: ";
+                cout << "Enter input integer in the range [1,6]: ";
                 cin>>inp;
-                if (inp == 1 || inp == 2 || inp == 3 || inp == 4 || inp==5) {
+                if (inp == 1 || inp == 2 || inp == 3 || inp == 4 || inp==5 || inp==6) {
                     temp=0;
                 } else {
                     cout<<"Enter Valid Input"<<endl;
@@ -635,23 +701,31 @@ int main(){
                     cin >>Customername;
                     cout<<"Enter Customer Id: ";
                     cin >>CustomerId;
+
                     if(Customer::searchCustomer(customers,Customername,CustomerId) !=nullptr){
-                        cout<<"Enter Car Details: "<<endl;
-                        cout<<"Enter Car Name: ";
-                        cin>>Carname;
-                        cout<<"Enter Car Model: ";
-                        cin>>Carmodel;
-                        cout<<"Enter Car Due Date as 'YYYY-MM-DD': ";
-                        cin>>due_date;
-                        while(!isValidDateFormat(due_date)){
-                            cout<<"Please Enter Valid Due date: ";
+                        double fine=Customer::checkFine(Customer::searchCustomer(customers,Customername,CustomerId));
+                        if(fine>0){
+                            cout<<"Please return previous rented Cars and pay fine of "<<fine<< "Rs as due date is already crossed"<<endl;
+                        }else if(Customer::getCustomerRecord(Customer::searchCustomer(customers,Customername,CustomerId))<5){
+                            cout<<"Your Previous Record is not so good we can't rent you a car"<<endl;
+                        }else{
+                            cout<<"Enter Car Details: "<<endl;
+                            cout<<"Enter Car Name: ";
+                            cin>>Carname;
+                            cout<<"Enter Car Model: ";
+                            cin>>Carmodel;
+                            cout<<"Enter Car Due Date as 'YYYY-MM-DD': ";
                             cin>>due_date;
-                        }
-                        if(Car::rentCar(cars, Carname, Carmodel)){
-                            Customer::searchCustomer(customers,Customername,CustomerId)->rentedCars.insert(Carname);
-                            car_duedates[Carname]=due_date;
-                            employee->rentedCars.insert(Carname);
-                            updateFines(customers,employees,car_duedates);
+                            while(!isValidDateFormat(due_date)){
+                                cout<<"Please Enter Valid Due date: ";
+                                cin>>due_date;
+                            }
+                            if(Car::rentCar(cars, Carname, Carmodel)){
+                                Customer::searchCustomer(customers,Customername,CustomerId)->rentedCars.insert(Carname);
+                                car_duedates[Carname]=due_date;
+                                employee->rentedCars.insert(Carname);
+                                updateFines(customers,employees,car_duedates);
+                            }
                         }
                     }else{
                         cout<<"Customer is not Registered !"<<endl;
@@ -665,7 +739,82 @@ int main(){
                         task=0;
                     }
                 } 
+            }else if(inp==5){
 
+                string Customername,CustomerId,Carname,Carmodel,details;
+                double car_condition,car_price;
+
+                cout<<"Enter Customer Details: "<<endl;
+                cout<<"Enter Customer Name: ";
+                cin >>Customername;
+                cout<<"Enter Customer Id: ";
+                cin >>CustomerId;
+                if(Customer::searchCustomer(customers,Customername,CustomerId) !=nullptr){
+                    cout<<"Enter Car Details: "<<endl;
+                    cout<<"Enter Car Name: ";
+                    cin>>Carname;
+                    cout<<"Enter Car Model: ";
+                    cin>>Carmodel;
+                    cout<<"Enter Car Current Condition: ";
+                    cin>>car_condition;
+                    cout<<"Enter Car Rental Price: ";
+                    cin>>car_price;
+                    cin.ignore();
+                    cout<<"Car Updated Other Details: ";
+                    getline(cin, details);
+
+                    Car* new_car=Car::addcar(Carname, Carmodel, car_condition,car_price, details);
+                    cars.push_back(new_car);
+                    Customer* cust=Customer::searchCustomer(customers, Customername, CustomerId);
+
+                    if(car_condition<5){
+                        if(Customer::getCustomerRecord(cust)>2){
+                            Customer::updateCustomerRecord(customer,Customer::getCustomerRecord(customer)-2);
+                        }else{
+                            Customer::updateCustomerRecord(customer,0);
+                        }
+                        if(Employee::getEmployeeRecord(employee)>1){
+                            Employee::updateEmployeeRecord(employee,Employee::getEmployeeRecord(employee)-1);                    
+                        }else{
+                            Employee::updateEmployeeRecord(employee,0); 
+                        }
+                    }
+
+                    if(Customer::checkFine(cust)>0){
+                        if(Customer::getCustomerRecord(cust)>1){
+                            Customer::updateCustomerRecord(customer,Customer::getCustomerRecord(customer)-1);
+                        }else{
+                            Customer::updateCustomerRecord(customer,0);
+                        }
+                    }else if(Customer::checkFine(cust)>1000){
+                        if(Customer::getCustomerRecord(cust)>2){
+                            Customer::updateCustomerRecord(customer,Customer::getCustomerRecord(customer)-2);
+                        }else{
+                            Customer::updateCustomerRecord(customer,0);
+                        }
+                        if(Employee::getEmployeeRecord(employee)>1){
+                            Employee::updateEmployeeRecord(employee,Employee::getEmployeeRecord(employee)-1);                    
+                        }else{
+                            Employee::updateEmployeeRecord(employee,0); 
+                        }
+                    }
+
+                    Car::updateCar(cars,Carname, Carmodel, 10 ,car_price, details);
+                    
+                    cust->rentedCars.erase(cust->rentedCars.find(Carname));
+                    employee->rentedCars.erase(employee->rentedCars.find(Carname));                
+
+                }else{
+                    cout<<"Customer is not Registered !"<<endl;
+                    cout<<"First Ask Manager to Register Customer"<<endl;
+                }
+
+                cout <<endl;
+                cout<<"Want to Perform Next Task Enter 1 else 0: ";
+                cin>>inp;
+                if(inp!=1){
+                    task=0;
+                }                 
             }else{
 
                 task=0;
@@ -702,7 +851,6 @@ int main(){
             }else if(inp==1){
                 string customerName,customerId,customerRecord;
                 unordered_map<string,string> cars_dates;
-                int fine;
                 unordered_set<string> cars_add;
                 cout<<"Enter Customer Name: ";
                 cin>>customerName;
@@ -710,10 +858,8 @@ int main(){
                 cin>>customerId;
                 cout<<"Enter Customer password: ";
                 cin>>password;
-                cout<<"Enter Fine due: ";
-                cin>>fine;
                 
-                Customer* new_customer = Customer::addCustomer(customerName, customerId, password, cars_add, fine, "average",cars_dates);
+                Customer* new_customer = Customer::addCustomer(customerName, customerId, password, cars_add, 0 ,5,cars_dates);
                 customers.push_back(new_customer);
 
                 cout<<"Want to Perform Next Task Enter 1 else 0: ";
@@ -723,7 +869,8 @@ int main(){
                 }
 
             }else if(inp==2){
-                string customerName,customerId,customerRecord;
+                string customerName,customerId;
+                double customerRecord;
                 int fine;
                 cout<<"Enter Customer Name: ";
                 cin>>customerName;
@@ -767,12 +914,8 @@ int main(){
                 cin>>employeeId;
                 cout<<"Enter Employee password: ";
                 cin>>password;
-                cout<<"Enter Fine due: ";
-                cin>>fine;
-                cout<<"Enter Employee Record: ";
-                cin>>employeeRecord;
                 
-                Employee* new_employee = Employee::addEmployee(employeeName,employeeId,password,cars_add,fine,"average");
+                Employee* new_employee = Employee::addEmployee(employeeName,employeeId,password,cars_add,0,5);
                 employees.push_back(new_employee); 
 
                 cout<<"Want to Perform Next Task Enter 1 else 0: ";
@@ -782,7 +925,8 @@ int main(){
                 }
 
             }else if(inp==5){
-                string employeeName,employeeId,employeeRecord;
+                string employeeName,employeeId;
+                double employeeRecord;
                 int fine;
                 cout<<"Enter Employee Name: ";
                 cin>>employeeName;
@@ -817,19 +961,20 @@ int main(){
                 }
 
             }else if(inp==7){
-                string name,model,condition,details;
+                string name,model,details;
+                double renting_price,condition;
                 cout<<"Enter New Car Details: "<<endl;
                 cout<<"Car Name: ";
                 cin>>name;
                 cout<<"Car Model: ";
                 cin>>model;
-                cout<<"Car Condition [1,10]: ";
-                cin>>condition;
+                cout<<"Enter Renting Price: ";
+                cin>>renting_price;
                 cin.ignore();
                 cout<<"Car Other Details: ";
                 getline(cin, details);
 
-                Car* new_car = Car::addcar(name, model, condition, details);
+                Car* new_car = Car::addcar(name, model, 10,renting_price, details);
                 cars.push_back(new_car);     
 
                 cout<<"Want to Perform Next Task Enter 1 else 0: ";
@@ -840,19 +985,20 @@ int main(){
 
             }else if(inp==8){
 
-                string name,model,condition,details;
+                string name,model,details;
+                double renting_price,condition;
                 cout<<"Enter Updated Car Details: "<<endl;
                 cout<<"Car Name: ";
                 cin>>name;
                 cout<<"Car Model: ";
                 cin>>model;
-                cout<<"Car updated Condition [1,10]: ";
-                cin>>condition;
+                cout<<"Car updated renting price : ";
+                cin>>renting_price;
                 cin.ignore();
                 cout<<"Car Updated Other Details: ";
                 getline(cin, details);
 
-                Car::updateCar(cars,name, model, condition, details);
+                Car::updateCar(cars,name, model, 10, renting_price, details);
 
                 cout<<"Want to Perform Next Task Enter 1 else 0: ";
                 cin>>inp;
@@ -907,8 +1053,8 @@ int main(){
             f1customers<<car_duedates[x]<<",";
         }
         f1customers<<"\n";
-        f1customers<<(customers[i])->fineDue<<"\n";
-        f1customers<<(customers[i])->customerRecord<<"\n";
+        f1customers<<Customer::checkFine(Customer::searchCustomer(customers,(customers[i])->name,(customers[i])->ID))<<"\n";
+        f1customers<<Customer::getCustomerRecord(Customer::searchCustomer(customers,(customers[i])->name,(customers[i])->ID))<<"\n";
     }
     for(int i=0;i<(employees).size();i++){
         f1employees<<(employees[i])->name<<"\n";
@@ -918,8 +1064,8 @@ int main(){
             f1employees<<x<<",";
         }
         f1employees<<"\n";
-        f1employees<<(employees[i])->fineDue<<"\n";
-        f1employees<<(employees[i])->employeeRecord<<"\n";
+        f1employees<<Employee::checkFine(Employee::searchEmployee(employees, (employees[i])->name,(employees[i])->ID))<<"\n";
+        f1employees<<Employee::getEmployeeRecord(Employee::searchEmployee(employees, (employees[i])->name,(employees[i])->ID))<<"\n";
     }
 
     for(int i=0;i<(managers).size();i++){
@@ -929,12 +1075,14 @@ int main(){
     }
 
     for(int i=0;i<(cars).size();i++){
-        f1cars<<(cars[i])->carName<<"\n";
-        f1cars<<(cars[i])->carModel<<"\n";
-        f1cars<<(cars[i])->Conditions<<"\n";
-        f1cars<<(cars[i])->otherDetails<<"\n";
+        f1cars<<Car::getName(cars[i])<<"\n";
+        f1cars<<Car::getModel(cars[i])<<"\n";
+        f1cars<<Car::getCondition(cars[i])<<"\n";
+        f1cars<<Car::getPrice(cars[i])<<"\n";
+        f1cars<<Car::getDetails(cars[i])<<"\n";
     }
 
     f1employees.close();f1customers.close();f1managers.close();f1cars.close();
     return 0;
+
 }
