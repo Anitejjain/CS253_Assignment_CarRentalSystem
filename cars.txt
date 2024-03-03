@@ -1,20 +1,25 @@
 Rolls-Royce
 RJ01abcd
 10
-Efficiency 90%
+4000
+AC: Available, Fuel: Diesel 
 Honda
 RJ02abcd
-8
-Efficiency 70%
+10
+3000
+AC: Available, Fuel: Petrol
 Ferrari
 RJ03abcd
-9
-Efficiency 85%
+10
+4000
+AC: Available, Fuel: Petrol
 Hyundai
 RJ04abcd
-5
-Efficiency 80%
+10
+2000
+AC: Available, Fuel: Diesel 
 Safari
 RJ05abcd
-8
-Efficiency 95%
+10
+2500
+AC: Available, Fuel: CNG
