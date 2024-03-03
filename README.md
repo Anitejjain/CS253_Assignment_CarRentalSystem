@@ -1,7 +1,7 @@
 Car Rental Management System
 
-**Introduction**:
-The Car Rental Management System is a software application designed to manage the rental operations of a car rental company. It can perform the management of customer, employee, manager, and car data.
+**Functionalities**:
+The Car Rental Management System is a software application designed to manage the rental operations of a car rental company. It can perform the management of customer, employee, manager, and car data. It also updates fine on rented car by taking due date and current date from system imposing 200 Rs fine on each extra day. It also updates Record of Customer and Employees dynamically on returning of Car if Car Condition gets Depleted then There will be decrease in customer record and employee record also on late returning it happens.
 
 **Features**:
 
